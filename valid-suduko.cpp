@@ -1,40 +1,64 @@
-class solution{
-    public:
-
-    void suduko(vector<vector<char>>& board){
-        isValidSudoku(board);
-       }
-        bool isValidSudoku(vector<vector<char>>& board) {
-                   for(int i=0;i<board.size();i++){
-                    for(int j=0;j<board[0].size();j++){
-                        if(board[i][j]=='.'){
-                          for(char c='1';c<='9';c++){
-                             if(isvalid(board,i,j,c)){
-                               board[i][j]=c;
-                               if(isValidSudoku(board)==true)
-                               return true;
-                               else
-                                board[i][j]='.'; 
-                             }
-                          }
-                         return false;
-                        }
-                    }
-                   }
-                   return true;
-        }
-    
-    
-    bool isvalid(vector<vector<char>>& board,int r,int col,char c){
+class Solution {
+public:
+  bool issafe(vector<vector<char>>& board,int row,int col,char d){
+ 
+   //hori
+   for(int j=0;j<9;j++){
+    if(board[row][j]== d){
+        return false;
+    }
+   }
+    //vert
     for(int i=0;i<9;i++){
-        if(board[i][col] == c)
-        return false;
-        if(board[r][i] == c)
-        return false;
-        if(board[3*(r/3)+i/3][3*(col/3)+i%3] == c)
-        return false;
+        if(board[i][col] == d){
+            return false;
+        }
     }
-    return true;
-    
+
+    int srow=(row/3)*3;
+   int scol=(col/3)*3;
+   for(int i=srow;i<=srow+2;i++){
+    for(int j=scol;j<=scol+2;j++){
+        if(board[i][j]==d){
+            return false;
+        }
     }
+   }
+
+return true;
+  }
+bool helper( vector<vector<char>>& board,int row,int col){
+    if(row == 9){
+        return true;
+    }
+    int nextrow=row;int nextcol=col+1;
+    if(nextcol == 9){
+        nextrow=row+1;
+        nextcol=0;
+    }
+
+    if(board[row][col]!='.'){
+           return helper(board,nextrow,nextcol);
+    }
+    for(char d='1';d<='9';d++){
+        if(issafe(board,row,col,d)){
+            board[row][col]=d;
+            if( helper(board,nextrow,nextcol)){
+                return true;
+            }
+            board[row][col]='.';
+                    }
+
+    }
+    return false;
+}
+
+
+   bool isValidSudoku(vector<vector<char>>& board){
+
+   return helper(board,0,0);
+
+   }
+
+
 };
